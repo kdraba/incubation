@@ -10,6 +10,7 @@
 !.eslintignore
 !.lintstagedrc
 !.huskyrc
+!.travis.yml
 node_modules/
 npm-packages-offline-cache/
 dist/

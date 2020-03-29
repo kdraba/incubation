@@ -11,6 +11,8 @@
     "build:watch": "tsc --build --watch",
     "build:force": "tsc --build --force",
     "bundle:watch": "rollup --config rollup.config.js --watch",
+    "build": "tsc --build",
+    "bundle": "rollup --config rollup.config.js",
     "bundle:debug": "node --inspect-brk node_modules/rollup/bin/rollup --exclude-after-remap false --config rollup.config.js",
     "lint:fix": "eslint --fix --ext .js,.ts ."
   },
