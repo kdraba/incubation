@@ -5,7 +5,7 @@ jobs:
   include:
     - stage: build
       name: "Build"
-      script: yarn run build
+      script: yarn run build:force
     - stage: bundle
       name: "Bundle"
       script: yarn run bundle

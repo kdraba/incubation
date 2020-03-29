@@ -20,8 +20,8 @@
     "skipLibCheck": true
   },
   "references": [
-    { "path": "iterable" },
-    { "path": "event-listener" }
+    { "path": "event-listener" },
+    { "path": "iterable" }
   ],
   "include": []
 }
