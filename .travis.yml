@@ -3,13 +3,11 @@ node_js:
   - 13
 jobs:
   include:
-    - stage: build
+    - stage: "Build, bundle, test"
       name: "Build"
       script: yarn run build:force
-    - stage: bundle
-      name: "Bundle"
+    - name: "Bundle"
       script: yarn run bundle
-    - stage: test
-      name: "Test"
+    - name: "Test"
       before_script: cd iterable
       script: yarn run test
