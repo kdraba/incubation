@@ -1,0 +1,12 @@
+import test from 'tape'
+import {filterMap} from './filter-map'
+import {apply} from '../../iterable/apply'
+
+test('filter map test', (t) => {
+  t.plan(1);
+
+  const op = filterMap((value: number) => Promise.resolve({skip: false, value}), {output: 'async'})
+  const result = apply([true, false, true], op)
+
+  t.deepEquals(Array.from(result), [true, true])
+})

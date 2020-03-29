@@ -1,0 +1,15 @@
+node_modules/
+npm-packages-offline-cache/
+dist/
+bundle/
+*.tsbuildinfo
+*.log
+*.lock
+*.conf
+*.adoc
+coverage/
+typedoc/
+/neo4j-community-*
+face-recognition/models
+*.feature
+*.*bak

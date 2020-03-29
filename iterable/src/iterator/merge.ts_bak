@@ -1,0 +1,55 @@
+interface IteratorResult<T> {
+  readonly type: 'iterator',
+  readonly value: T,
+  readonly done: boolean,
+}
+
+interface ValueResult<T> {
+  readonly type: 'value',
+  readonly value: T,
+}
+
+async function nextValue<T>(it: AsyncIterator<T>, uncompleted: Set<Promise<ValueResult<T>>>) {
+  const p = new Promise<ValueResult<T>>((resolve, reject) => {
+    it.next().then(({ value, done }) => {
+      uncompleted.delete(p)
+
+      if (!done) {
+        uncompleted.add(nextValue(it, uncompleted))
+      }
+
+      resolve({ type: 'value', value })
+    }).catch(reject)
+  })
+
+  return p
+}
+
+export function merge<T>(iterables: Iterator<AsyncIterator<T>> | AsyncIterator<AsyncIterator<T>>): AsyncIterator<T>
+export function merge<T>(iterables: AsyncIterable<AsyncIterable<T>>): AsyncIterable<T> {
+  const asyncIterator = async function*() {
+    const uncompleted = new Set<Promise<ValueResult<T>>>()
+
+    const its = iterables[Symbol.asyncIterator]()
+    let itsPromise: Promise<IteratorResult<AsyncIterable<T>>> | false = 
+      its.next().then(({ value, done }) => ({ type: 'iterator', value, done }))
+
+    while(uncompleted.size > 0 || itsPromise) {
+      const result: IteratorResult<AsyncIterable<T>> | ValueResult<T> =
+        await (itsPromise ? Promise.race([itsPromise, ...uncompleted.values()]) : Promise.race(uncompleted.values()))
+
+      if (result.type === 'iterator') {
+        if (!result.done) {
+          nextValue(result.value[Symbol.asyncIterator](), uncompleted)
+          itsPromise = its.next().then(({ value, done }) => ({ type: 'iterator', value, done }))
+        } else {
+          itsPromise = false
+        }
+      } else {
+        yield result.value
+      }
+    }
+  }
+
+  return {[Symbol.asyncIterator]: asyncIterator }
+}

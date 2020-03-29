@@ -1,0 +1,16 @@
+{
+  "name": "@kdraba/iterable",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "node ../node_modules/tape/bin/tape bundle/**/*test.bundle.js",
+    "test:mem": "node ../node_modules/tape/bin/tape bundle/**/*test.mem.bundle.js"
+  },
+  "devDependencies": {
+    "@ardatan/node-memwatch": "^1.0.8",
+    "@types/sinon": "^7.0.13",
+    "@types/tape": "^4.2.33",
+    "faucet": "^0.0.1",
+    "sinon": "^7.3.2",
+    "tape": "^4.11.0"
+  }
+}

@@ -1,0 +1,149 @@
+/*
+type Operator<TIn> = (value: TIn) => unknown
+
+function pipe<TIn, TOut>(
+  op1: (value: TIn) => any,
+  op2: (value: ReturnType<typeof op1>) => any,
+): (value: TIn) => TOut {
+  return null as any
+}
+
+const op1 = <T>(value: T) => value
+const op2 = <T extends string>(value: T) => value
+const op3 = () => 1
+
+const p1 = pipe(op1, op2)
+const p2 = pipe(op2, op1)
+const r1: string = p2('test')
+const r2: number = p2('test')
+
+
+function pipe2<TOp1 extends (value: any) => any, TOp2 extends (value: ReturnType<TOp2>) => any>(
+  op1: TOp1,
+  op2: TOp2,
+): (value: Parameters<TOp1>[0]) => ReturnType<TOp2> {
+  return null as any
+}
+
+const p3 = pipe2(op1, op2)
+const p4 = pipe2(op2, op1)
+const r3: string = p4('test')
+const r4: number = p4('test')
+
+function pipe3<TIn, TNext, TOut>(
+  op1: (v: TIn) => TNext,
+  op2: (v: TNext) => TOut,
+): (v: TIn) => TOut {
+  return null as any
+}
+
+const p5 = pipe3(op1, op2)
+const p6 = pipe3(op2, op1)
+const r5: string = p6('test')
+const r6: number = p6('test')
+const p6_1 = pipe3(p6, op3)
+const r6_1: number = p6_1('test')
+
+function pipe4<TIn, TIn2>(
+  op1: (v: TIn) => TIn2,
+  op2: (v: TIn2) => any,
+): (v: TIn) => ReturnType<typeof op2> {
+  return null as any
+}
+
+const p7 = pipe4(op1, op2)
+const p8 = pipe4(op2, op1)
+const r7: string = p8('test')
+const r8: number = p8('test')
+*/
+
+function pipe<TIn, TNext, TOut>(
+  op1: (v: Iterator<TIn>) => Iterator<TNext>,
+  op2: (v: Iterator<TNext>) => Iterator<TOut>,
+): (v: Iterator<TIn>) => Iterator<TOut>
+function pipe<TIn, TNext, TOut>(
+  op1: (v: Iterator<TIn>) => Iterator<TNext>,
+  op2: (v: Iterator<TNext>) => AsyncIterator<TOut>,
+): (v: AsyncIterator<TIn>) => AsyncIterator<TOut>
+function pipe<TIn, TNext, TOut>(
+  op1: (v: Iterator<TIn>) => AsyncIterator<TNext>,
+  op2: (v: AsyncIterator<TNext>) => AsyncIterator<TOut>,
+): (v: AsyncIterator<TIn>) => AsyncIterator<TOut>
+function pipe<TIn, TNext, TOut>(
+  op1: (v: AsyncIterator<TIn>) => AsyncIterator<TNext>,
+  op2: (v: AsyncIterator<TNext>) => AsyncIterator<TOut>,
+): (v: AsyncIterator<TIn>) => AsyncIterator<TOut>
+function pipe<TIn, TNext, TOut>(
+  op1: (v: Iterator<TIn> & AsyncIterator<TIn>) => Iterator<TNext> | AsyncIterator<TNext>,
+  op2: (v: Iterator<TNext> & AsyncIterator<TNext>) => Iterator<TOut> | AsyncIterator<TOut>,
+): any {// (v: Iterator<TIn> | AsyncIterator<TIn>) => Iterator<TOut> | AsyncIterator<TOut> {
+  return null as any
+}
+
+interface SyncBuilder<TIn> extends Iterator<TIn> {
+  pipe<TOut>(op: (v: Iterator<TIn>) => Iterator<TOut>): SyncBuilder<TOut>
+  pipe<TOut>(op: (v: Iterator<TIn>) => AsyncIterator<TOut>): AsyncBuilder<TOut>
+}
+
+interface AsyncBuilder<TIn> extends AsyncIterator<TIn> {
+  pipe<TOut>(op: (v: AsyncIterator<TIn>) => AsyncIterator<TOut>): AsyncBuilder<TOut>
+}
+
+function source<TIn>(it: Iterator<TIn>): SyncBuilder<TIn>
+function source<TIn>(it: AsyncIterator<TIn>): AsyncBuilder<TIn>
+function source(it: any): any {
+  return null as any
+}
+
+interface SyncOpBuilder<TIn> {
+  pipe<TOut>(op: (v: Iterator<TIn>) => Iterator<TOut>): SyncOpBuilder<TOut>
+  pipe<TOut>(op: (v: Iterator<TIn>) => AsyncIterator<TOut>): AsyncOpBuilder<TOut>
+}
+
+interface AsyncOpBuilder<TIn> {
+  pipe<TOut>(op: (v: AsyncIterator<TIn>) => AsyncIterator<TOut>): AsyncOpBuilder<TOut>
+}
+
+function first<TIn, TOut>(op: (v: Iterator<TIn>) => Iterator<TOut>): SyncOpBuilder<TIn>
+function first<TIn, TOut>(op: (v: Iterator<TIn> | AsyncIterator<TOut>) => AsyncIterator<TOut>): AsyncOpBuilder<TIn>
+function first(it: any): any {
+  return null as any
+}
+
+function apply<TIn, TOut>(it: Iterator<TIn>, op: (v: Iterator<TIn>) => Iterator<TOut>): Iterator<TOut>
+function apply<TIn, TOut>(it: Iterator<TIn> | AsyncIterator<TIn>, op: (v: Iterator<TIn> | AsyncIterator<TIn>) => AsyncIterator<TOut>): AsyncIterator<TOut>
+function apply(it: any, op: any): any {
+  return null as any
+}
+
+type HigherOrderSync<TIn> = Iterator<Iterator<TIn>>
+type HigherOrderAsync<TIn> = Iterator<AsyncIterator<TIn> | Iterator<TIn>> | AsyncIterator<AsyncIterator<TIn> | Iterator<TIn>>
+
+function concat<TIn>(): <
+  T extends (HigherOrderSync<TIn> | HigherOrderAsync<TIn>)
+>(it: T) => typeof it extends HigherOrderSync<TIn> ? Iterator<TIn> : AsyncIterator<TIn>
+function concat(): ((it: any) => any) {
+  return null as any
+}
+
+function toArray<TIn>(): <
+  T extends AsyncIterator<TIn> | Iterator<TIn>
+>(it: T) => typeof it extends Iterator<TIn> ? Iterator<TIn[]> : AsyncIterator<TIn[]>
+function toArray(): ((it: any) => any) {
+  return null as any
+}
+
+const itSync: Iterator<Iterator<number>> = null as any
+
+const op1 = apply(itSync, pipe(concat(), toArray()))
+const op1_ = source(itSync).pipe(concat()).pipe(toArray())
+
+const itAsync: Iterator<AsyncIterator<number>> = null as any
+const op2 = apply(itAsync, pipe(concat(), toArray()))
+const op2_ = source(itAsync).pipe(concat()).pipe(toArray())
+
+function x<TIn>(it: Iterator<TIn> | AsyncIterator<TIn>) {
+  return source(it).pipe(concat()).pipe(toArray())
+}
+
+first(concat()).pipe(toArray())

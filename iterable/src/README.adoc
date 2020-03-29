@@ -1,0 +1,34 @@
++ generator
+  + range
+  + of
++ iterator
+  + apply
++ iterable
+  + concat
+  + merge
++ operator
+  + core
+    + transform
+    + filterMap
+    + map
+    + filter
+    + scan
+    + default-value
+    + distinct-until-changed
+    + throttle
+    + debounce
+    + sample
+  + finite
+    + last
+    + reduce
+    + to-array
+  + terminal
+    + until
+    + first
+    + take
+  + finite-terminal
+    + every
+    + any
+  + pipe
+
+

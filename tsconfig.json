@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "declaration": true,
+    "moduleResolution": "node",
+    "target": "es2019",
+    "esModuleInterop": true,
+    "strict": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kdraba/iterable": ["./iterable/dist"],
+      "@kdraba/event-listener": ["./event-listener/dist"]
+    },
+    "typeRoots": ["./@types", "./node_modules/@types"],
+    "skipLibCheck": true
+  },
+  "references": [
+    { "path": "iterable" },
+    { "path": "event-listener" }
+  ],
+  "include": []
+}
