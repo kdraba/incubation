@@ -1,13 +1,5 @@
 language: node_js
 node_js:
   - 13
-jobs:
-  include:
-    - stage: "Build, bundle, test"
-      name: "Build"
-      script: yarn run build:force
-    - name: "Bundle"
-      script: yarn run bundle
-    - name: "Test"
-      before_script: cd iterable
-      script: yarn run test
+script: yarn run build:force && yarn run bundle && cd iterable && yarn run test
+    
