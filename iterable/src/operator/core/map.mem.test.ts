@@ -31,9 +31,9 @@ test('map/heap mem test', (t) => {
       fail: (msg) => t.fail(msg),
     },
     {
-      key: 'rss',
+      key: 'heapUsed',
       chunkSize: 128,
-      count: 2000,
+      count: 10000,
       warmUpCount: 100,
     },
   )

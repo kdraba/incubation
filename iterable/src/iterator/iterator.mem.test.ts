@@ -2,7 +2,7 @@ import test from 'tape'
 
 import {memTest} from '../mem-test'
 
-test.only('iterator/heap mem', async (t) => {
+test('iterator/heap mem', async (t) => {
   t.plan(1)
 
   await memTest(
@@ -12,9 +12,9 @@ test.only('iterator/heap mem', async (t) => {
       fail: (msg) => t.fail(msg),
     },
     {
-      key: 'rss',
+      key: 'heapUsed',
       chunkSize: 1024 * 1024,
-      count: 5000,
+      count: 10000,
       warmUpCount: 100,
     },
   )

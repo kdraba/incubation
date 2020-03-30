@@ -56,9 +56,9 @@ test('pushable-iterator/heap mem', async (t) => {
       fail: (msg) => t.fail(msg),
     },
     {
-      key: 'rss',
+      key: 'heapUsed',
       chunkSize: 1024 * 1024,
-      count: 5000,
+      count: 10000,
       warmUpCount: 100,
     },
   )

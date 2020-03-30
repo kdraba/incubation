@@ -48,9 +48,9 @@ test('transform/heap mem test', async (t) => {
       fail: (msg) => t.fail(msg),
     },
     {
-      key: 'rss',
+      key: 'heapUsed',
       chunkSize: 128,
-      count: 20000,
+      count: 10000,
       warmUpCount: 100,
     },
   )
@@ -75,9 +75,9 @@ test('transform/async/heap mem test', async (t) => {
       fail: (msg) => t.fail(msg),
     },
     {
-      key: 'rss',
+      key: 'heapUsed',
       chunkSize: 128,
-      count: 2000,
+      count: 500,
       warmUpCount: 100,
     },
   )

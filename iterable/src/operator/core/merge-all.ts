@@ -40,6 +40,70 @@ async function* readInitial<TIn>(
   }
 }
 
+async function loopPromise<TIn>(
+  idle: PushableIterator<IndexedValue<AsyncIterator<TIn>>>,
+  close: PushableIterator<AsyncIterator<TIn>>,
+  writeToBuffer: (v: IndexedValue<TIn>) => void,
+  {
+    getDone,
+    setDone,
+  }: {getDone: () => boolean; setDone: (done: boolean) => void},
+  promise: {
+    resolve: () => void
+    reject: (error: any) => void
+  },
+) {
+  //count++
+  //console.log('unresolved', count, unfinished)
+  let p:
+    | {
+        resolve: () => void
+        reject: (error: any) => void
+      }
+    | undefined = promise
+
+  try {
+    while (!getDone() && p) {
+      const it = await idle.next()
+      setDone(it.done || false)
+
+      if (!it.done) {
+        //unfinished++
+        it.value.value
+          .next()
+          .then((v) => {
+            //unfinished--
+            if (!v.done) {
+              //valueResolved || count--
+
+              writeToBuffer({
+                value: v.value,
+                index: it.value.index,
+              })
+              //console.log('push to idle')
+              p && p.resolve()
+              p = undefined
+              idle.push(it.value)
+            } else {
+              p && p.resolve()
+              p = undefined
+              close.push(it.value.value)
+            }
+          })
+          .catch((e) => {
+            p && p.reject(e)
+            p = undefined
+          })
+      }
+    }
+
+    p && p.resolve()
+  } catch (e) {
+    setDone(true)
+    p && p.reject(e)
+  }
+}
+
 async function* readIdle<TIn>(
   idle: PushableIterator<IndexedValue<AsyncIterator<TIn>>>,
   close: PushableIterator<AsyncIterator<TIn>>,
@@ -50,48 +114,14 @@ async function* readIdle<TIn>(
   //  let unfinished = 0
 
   while (!done) {
-    await new Promise(async (resolve, reject) => {
-      //count++
-      //console.log('unresolved', count, unfinished)
-      try {
-        let valueResolved = false
-
-        while (!done && !valueResolved) {
-          const it = await idle.next()
-          done = it.done || false
-
-          if (!it.done) {
-            //unfinished++
-            it.value.value
-              .next()
-              .then((v) => {
-                //unfinished--
-                if (!v.done) {
-                  //valueResolved || count--
-
-                  valueResolved = true
-                  writeToBuffer({
-                    value: v.value,
-                    index: it.value.index,
-                  })
-                  //console.log('push to idle')
-                  resolve()
-                  idle.push(it.value)
-                } else {
-                  resolve()
-                  close.push(it.value.value)
-                }
-              })
-              .catch((e) => {
-                valueResolved = true
-                reject(e)
-              })
-          }
-        }
-      } catch (e) {
-        done = true
-        reject(e)
-      }
+    await new Promise((resolve, reject) => {
+      loopPromise(
+        idle,
+        close,
+        writeToBuffer,
+        {getDone: () => done, setDone: (d: boolean) => (done = d)},
+        {resolve, reject},
+      )
     })
 
     yield

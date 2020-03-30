@@ -1,5 +1,3 @@
-import {gc as mgc} from '@ardatan/node-memwatch'
-
 function* values(max: number, size: number) {
   let index = 0
 
@@ -23,6 +21,50 @@ export async function memTest(
     key,
     warmUpCount,
     chunkSize,
+    maxRetries = 100,
+  }: {
+    key: keyof NodeJS.MemoryUsage
+    count: number
+    warmUpCount: number
+    chunkSize: number
+    maxRetries?: number
+  },
+) {
+  let success = false
+  let counter = 0
+  let maxFailed: number | undefined
+  let minFailed: number | undefined
+
+  while (!success && counter < maxRetries) {
+    const r = await run(op, {count, key, warmUpCount, chunkSize})
+    if (r) {
+      maxFailed = maxFailed === undefined ? r : Math.max(maxFailed, r)
+      minFailed = minFailed === undefined ? r : Math.min(minFailed, r)
+    } else {
+      success = true
+    }
+
+    counter++
+  }
+
+  if (!success) {
+    fail(
+      `${key} max diff ${maxFailed} min diff ${minFailed} after ${counter} retries (warm up: ${warmUpCount} / count: ${count})`,
+    )
+  } else {
+    pass(
+      `${key} success after ${counter} retries (warm up: ${warmUpCount} / count: ${count})`,
+    )
+  }
+}
+
+export async function run(
+  op: (it: Iterator<Buffer>) => Iterator<unknown> | AsyncIterator<unknown>,
+  {
+    count,
+    key,
+    warmUpCount,
+    chunkSize,
   }: {
     key: keyof NodeJS.MemoryUsage
     count: number
@@ -33,6 +75,7 @@ export async function memTest(
   let start = 0
   let initial = 0
   let used = 0
+  const end = warmUpCount + count - 1
 
   const it = values(warmUpCount + count, chunkSize)
 
@@ -43,53 +86,50 @@ export async function memTest(
   let failed = 0
 
   while (!done && !failed) {
-    const next = resultIt.next() as any
-    const result = next.then ? await next : next
-    done = !!result.done
+    done = await next(resultIt)
 
     if (counter === 0) {
-      start = gc(key)
+      start = await gc(key)
       initial = start
       used = start
-    } else if (counter < warmUpCount) {
-      used = gc(key)
+    } else if (counter === warmUpCount) {
+      used = await gc(key)
       start = counter === 0 ? used : start
 
       initial = Math.max(used, initial)
-    } else {
-      used = gc(key)
+    } else if (counter === end) {
+      used = await gc(key)
 
       const diffUsed = used - initial
 
       if (diffUsed > 0) {
         failed = diffUsed
-      } else if (done) {
-        pass(
-          `success after ${counter} iterations (warm up: ${warmUpCount} / count: ${count})`,
-        )
+      } else {
+        done = true
       }
     }
 
     !done && !failed && counter++
   }
 
-  if (counter < warmUpCount) {
-    fail(`did not complete warm up ${counter} < ${warmUpCount}`)
-  } else if (failed) {
-    fail(
-      `${key} diff ${failed} > 0 after ${counter -
-        warmUpCount} iterations, warm up diff ${initial - start}`,
-    )
-  } else if (counter < warmUpCount + count) {
-    fail(`did not complete values ${counter - warmUpCount} < ${count}`)
+  if (counter < end) {
+    throw new Error(`did not finish ${counter} < ${end}`)
   }
+  return failed
 }
 
-function gc(key: keyof NodeJS.MemoryUsage) {
-  //global.gc()
-  mgc()
-
-  const mem = process.memoryUsage()[key]
+async function gc(key: keyof NodeJS.MemoryUsage) {
+  global.gc()
+  return new Promise<number>((resolve) =>
+    setTimeout(() => resolve(process.memoryUsage()[key]), 10),
+  )
   //console.log(process.memoryUsage())
-  return mem
+}
+
+async function next(
+  it: Iterator<unknown> | AsyncIterator<unknown>,
+): Promise<boolean> {
+  const next = it.next() as any
+  const result = next.then ? await next : next
+  return !!result.done
 }
