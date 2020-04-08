@@ -65,6 +65,7 @@ async function loopPromise<TIn>(
   try {
     while (!getDone() && p) {
       const it = await idle.next()
+
       setDone(it.done || false)
 
       if (!it.done) {
@@ -158,7 +159,9 @@ async function* x<TIn>(
   let idleItDone = false
   let idleItNext: Promise<unknown> | undefined
 
-  const loopIt = new PushableIterator<void>(createLastValueBufferStrategy())
+  const loopIt = new PushableIterator<void>(
+    createLastValueBufferStrategy<void>(),
+  )
 
   while (!done) {
     const bufferedValue = bufferStrategy.pop(bufferState, popIndex)
@@ -209,11 +212,11 @@ async function* x<TIn>(
       //!done && (await Promise.race(promises))
 
       if (!done) {
-        await loopIt.next()
+        done = !!(await loopIt.next()).done
       }
     }
 
-    loopIt.return()
+    done && loopIt.return()
   }
 }
 

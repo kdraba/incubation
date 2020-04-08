@@ -1,9 +1,13 @@
 import test from 'tape'
 
+import {fork} from '../../fork'
+import {asyncIterator} from '../../iterator/async-iterator'
 import {sequential} from '../../iterator/sequential'
-import {source} from '../../pipe'
+import {asyncSource, source} from '../../pipe'
 import {toArray} from '../finite/to-array'
 import {combineAll} from './combine-all'
+import {concatMap} from './concat-map'
+import {filter} from './filter'
 import {tap} from './tap'
 
 test('combine-all/async - no iterators', async (t) => {
@@ -71,7 +75,7 @@ test('combine-all/single async iterator with values', async (t) => {
   ])
 })
 
-test('combine-all/async multiple  non empty', async (t) => {
+test('combine-all/async multiple non empty', async (t) => {
   t.plan(1)
 
   const values = ['_', 1, 'a', 2, 'b', 3, 'c', 'd'] as const
@@ -124,6 +128,95 @@ test('combine-all/async multiple  non empty', async (t) => {
       previous: [values[0], values[5], values[6]],
       index: 3,
     },
+  ])
+})
+
+test('combine-all/async - fork and combine sync iterator with values', async (t) => {
+  t.plan(1)
+
+  const it = [1, 2, 3][Symbol.iterator]()
+
+  const resultIt = source(fork(it, 2))
+    .pipe(combineAll())
+    .pipe(toArray())
+  const result = await resultIt[Symbol.asyncIterator]().next()
+
+  t.deepEquals(result.value, [
+    {value: [1], previous: [], index: 0},
+    {value: [1, 1], previous: [1], index: 1},
+    {value: [2, 1], previous: [1, 1], index: 0},
+    {value: [2, 2], previous: [2, 1], index: 1},
+    {value: [3, 2], previous: [2, 2], index: 0},
+    {value: [3, 3], previous: [3, 2], index: 1},
+  ])
+})
+
+test('combine-all/async - fork and combine async iterator with values', async (t) => {
+  t.plan(1)
+
+  const it = asyncIterator([1, 2, 3][Symbol.iterator]())
+
+  const resultIt = source(fork(it, 2))
+    .pipe(combineAll())
+    .pipe(toArray())
+  const result = await resultIt[Symbol.asyncIterator]().next()
+
+  t.deepEquals(result.value, [
+    {value: [1], previous: [], index: 0},
+    {value: [1, 1], previous: [1], index: 1},
+    {value: [2, 1], previous: [1, 1], index: 0},
+    {value: [2, 2], previous: [2, 1], index: 1},
+    {value: [3, 2], previous: [2, 2], index: 0},
+    {value: [3, 3], previous: [3, 2], index: 1},
+  ])
+})
+
+test('combine-all/async - fork and combine sync iterator with values and filter', async (t) => {
+  t.plan(1)
+
+  const it = [1, 2][Symbol.iterator]()
+  const [forked1, forked2] = fork(it, 2)
+
+  const resultIt = source([
+    forked1,
+    asyncSource({[Symbol.asyncIterator]: () => forked2})
+      .pipe(filter((v) => v % 2 === 0))
+      [Symbol.asyncIterator](),
+  ])
+    .pipe(combineAll())
+    .pipe(toArray())
+  const result = await resultIt[Symbol.asyncIterator]().next()
+
+  t.deepEquals(result.value, [
+    {value: [1], previous: [], index: 0},
+    {value: [2], previous: [1], index: 0},
+    {value: [2, 2], previous: [2], index: 1},
+  ])
+})
+
+test('combine-all/async - fork and combine sync iterator with values and concatMap', async (t) => {
+  t.plan(1)
+
+  const it = [1, 2][Symbol.iterator]()
+  const [forked1, forked2] = fork(it, 2)
+
+  const resultIt = source([
+    forked1,
+    asyncSource({[Symbol.asyncIterator]: () => forked2})
+      .pipe(concatMap((v) => [v, v + 10][Symbol.iterator]()))
+      [Symbol.asyncIterator](),
+  ])
+    .pipe(combineAll())
+    .pipe(toArray())
+  const result = await resultIt[Symbol.asyncIterator]().next()
+
+  t.deepEquals(result.value, [
+    {value: [1], previous: [], index: 0},
+    {value: [1, 1], previous: [1], index: 1},
+    {value: [1, 11], previous: [1, 1], index: 1},
+    {value: [2, 11], previous: [1, 11], index: 0},
+    {value: [2, 2], previous: [2, 11], index: 1},
+    {value: [2, 12], previous: [2, 2], index: 1},
   ])
 })
 

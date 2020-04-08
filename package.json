@@ -5,7 +5,9 @@
   "type": "module",
   "workspaces": [
     "iterable",
-    "event-listener"
+    "iterable-stream",
+    "event-listener",
+    "discogs"
   ],
   "scripts": {
     "build:watch": "tsc --build --watch",

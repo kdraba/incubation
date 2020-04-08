@@ -120,7 +120,7 @@ function resolveInOrder<TValues extends readonly any[]>(
   }> = values.map((value) => {
     let resolver: (() => void) | undefined
     const promise = new Promise((resolve) => {
-      resolver = () => resolve(value)
+      resolver = () => setTimeout(() => resolve(value), 0)
     })
 
     return {promise, resolve: resolver!}

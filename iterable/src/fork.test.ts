@@ -11,7 +11,7 @@ test('fork: empty source iterator and two forks', async (t) => {
 
   const it: Iterator<never> = [][Symbol.iterator]()
 
-  const v = fromCombineLatest(fork(it, [(v) => v, (v) => v]))
+  const v = fromCombineLatest(fork(it, 2))
 
   const resultIt = v.pipe(toArray())
   const result = await resultIt[Symbol.asyncIterator]().next()
@@ -24,7 +24,7 @@ test('fork: two forks simply emit source values', async (t) => {
 
   const it: Iterator<number> = [1, 2][Symbol.iterator]()
 
-  const v = fromCombineLatest(fork(it, [(v) => v, (v) => v]))
+  const v = fromCombineLatest(fork(it, 2))
 
   const resultIt = v.pipe(toArray())[Symbol.asyncIterator]()
   const result = await resultIt.next()
@@ -42,15 +42,13 @@ test('fork: two forks, one concat map values', async (t) => {
 
   const it: Iterator<number> = [1, 2][Symbol.iterator]()
 
-  const v = fromCombineLatest(
-    fork(it, [
-      (v) => v,
-      (v) =>
-        asyncSource({[Symbol.asyncIterator]: () => v})
-          .pipe(concatMap((x) => [x, -x][Symbol.iterator]()))
-          [Symbol.asyncIterator](),
-    ]),
-  )
+  const [fork1, fork2] = fork(it, 2)
+  const v = fromCombineLatest([
+    fork1,
+    asyncSource({[Symbol.asyncIterator]: () => fork2})
+      .pipe(concatMap((x) => [x, -x][Symbol.iterator]()))
+      [Symbol.asyncIterator](),
+  ])
 
   const resultIt = v.pipe(toArray())[Symbol.asyncIterator]()
   const result = await resultIt.next()

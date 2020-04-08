@@ -1,3 +1,4 @@
+import {range} from './generator/range'
 import {createLastValueBufferStrategy as createBufferStrategy} from './iterator/last-value-buffer-strategy'
 import {PushableIterator} from './iterator/pushable-iterator'
 
@@ -18,31 +19,28 @@ async function* createFork<TIn>(
   }
 }
 
-export function fork<TIn, TOut>(
+export function fork<TIn>(
   iterator: Iterator<TIn> | AsyncIterator<TIn>,
-  forks: readonly [(v: AsyncIterator<TIn>) => AsyncIterator<TOut>],
-): [AsyncIterator<TOut>]
-export function fork<TIn, TOut1, TOut2>(
+  forks: 1,
+): [AsyncIterator<TIn>]
+export function fork<TIn>(
   iterator: Iterator<TIn> | AsyncIterator<TIn>,
-  forks: readonly [
-    (v: AsyncIterator<TIn>) => AsyncIterator<TOut1>,
-    (v: AsyncIterator<TIn>) => AsyncIterator<TOut2>,
-  ],
-): [AsyncIterator<TOut1>, AsyncIterator<TOut2>]
-export function fork<TIn, TFork>(
+  forks: 2,
+): [AsyncIterator<TIn>, AsyncIterator<TIn>]
+export function fork<TIn>(
   iterator: Iterator<TIn> | AsyncIterator<TIn>,
-  forks: ReadonlyArray<(v: AsyncIterator<TIn>) => AsyncIterator<TFork>>,
-): ReadonlyArray<AsyncIterator<TFork>> {
+  forks: number,
+): ReadonlyArray<AsyncIterator<TIn>> {
   const waiting = new Set<PushableIterator<TIn>>()
   const resolved = new Set<PushableIterator<TIn>>()
   let current: Promise<IteratorResult<TIn>> | undefined
   function addToWaiting(pushIt: PushableIterator<TIn>) {
     current =
-      !current || resolved.size >= forks.length
+      !current || resolved.size >= forks
         ? Promise.resolve(iterator.next())
         : current
 
-    if (resolved.size >= forks.length) {
+    if (resolved.size >= forks) {
       resolved.clear()
 
       for (const w of waiting.values()) {
@@ -73,10 +71,11 @@ export function fork<TIn, TFork>(
     }
   }
 
-  return forks.map((fork) => {
+  return Array.from({
+    [Symbol.iterator]: () => range({start: 0, count: forks}),
+  }).map(() => {
     const pushIt = new PushableIterator<TIn>(createBufferStrategy())
 
-    const forkIt = createFork(pushIt, addToWaiting)
-    return fork(forkIt)
+    return createFork(pushIt, addToWaiting)
   })
 }

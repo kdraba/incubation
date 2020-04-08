@@ -1,0 +1,7 @@
+* make input file identifiable, e.g. by calculating a hash
+* keep end position of last completely parsed release text
+* print resume information on SIGINT, i.e. file identifier and text position
+* add resume information to release as source information
+* add cli parameter for resume information
+* add cli parameters to switch between file overwrite/append/create/create+append
+* on resume verify file identifier and skip to provided text position

@@ -14,14 +14,18 @@
     "baseUrl": ".",
     "paths": {
       "@kdraba/iterable": ["./iterable/dist"],
-      "@kdraba/event-listener": ["./event-listener/dist"]
+      "@kdraba/iterable-stream": ["./iterable-stream/dist"],
+      "@kdraba/event-listener": ["./event-listener/dist"],
+      "@kdraba/discogs": ["./discogs/dist"]
     },
     "typeRoots": ["./@types", "./node_modules/@types"],
     "skipLibCheck": true
   },
   "references": [
     { "path": "event-listener" },
-    { "path": "iterable" }
+    { "path": "iterable" },
+    { "path": "iterable-stream" },
+    { "path": "discogs" }
   ],
   "include": []
 }

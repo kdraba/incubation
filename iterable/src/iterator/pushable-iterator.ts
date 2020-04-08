@@ -158,7 +158,7 @@ export class PushableIterator<TIn, TOut = TIn, TState = any>
       },
       updateDone: (done: boolean | any) => {
         this.done = done
-        this.close()
+        done && this.close()
       },
       isClosing: () => this.closing,
     })

@@ -1,10 +1,9 @@
-import {transform} from './transform'
+import {isOfType} from './is-of-type'
+
+function guard<T extends Exclude<any, undefined>>(v: T | undefined): v is T {
+  return v !== undefined
+}
 
 export function isDefined<T>() {
-  return transform<T | undefined, T, never>({
-    update: (value) =>
-      value !== undefined
-        ? {value, emit: true, clear: true, proceed: true}
-        : {emit: false, clear: true, proceed: true},
-  })
+  return isOfType<T, T | undefined>(guard)
 }

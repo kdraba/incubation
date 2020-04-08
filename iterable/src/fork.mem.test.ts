@@ -24,7 +24,7 @@ test('fork: mem test', async (t) => {
 
   const it = values(100, size)
 
-  const forks = fork(it, [(v) => v, (v) => v])
+  const forks = fork(it, 2)
 
   let done = false
 

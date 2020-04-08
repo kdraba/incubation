@@ -1,7 +1,8 @@
 .*
 *#
 *~
-!.dir-locals.el
+#!.dir-locals.el
+start-emacs.sh
 !.gitignore
 !.yarnrc
 !.prettierrc
