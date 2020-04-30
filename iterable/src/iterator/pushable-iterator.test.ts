@@ -274,3 +274,27 @@ test('pushable-iterator/multiple values', async (t) => {
   ).value
   t.deepEquals(values, [0, 1, 2])
 })
+
+test('pushable-iterator/return resolves open promise', async (t) => {
+  const it = createPushableIterator()
+
+  t.plan(1)
+
+  it.push(1)
+  await it.next()
+
+  t.comment('get next promise')
+  const p = it.next()
+
+  t.comment('return iterator')
+  it.return()
+
+  t.deepEqual(
+    await p,
+    {
+      done: true,
+      value: undefined,
+    },
+    'done',
+  )
+})

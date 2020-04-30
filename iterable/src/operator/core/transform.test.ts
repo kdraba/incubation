@@ -5,7 +5,7 @@ import {asyncSource, source} from '../../pipe'
 import {toArray} from '../finite/to-array'
 import {transform} from './transform'
 
-test('transform/empty input', (t) => {
+test('transform/sync/empty input', (t) => {
   t.plan(1)
 
   const it = [true]
@@ -18,7 +18,7 @@ test('transform/empty input', (t) => {
   t.deepEquals(Array.from(result), [])
 })
 
-test('transform/sync number input', (t) => {
+test('transform/sync/number input', (t) => {
   t.plan(1)
 
   const it = [1, 2, 3]
@@ -31,7 +31,7 @@ test('transform/sync number input', (t) => {
   t.deepEquals(Array.from(result), [1, 2, 3])
 })
 
-test('transform/sync number input with toArray', (t) => {
+test('transform/sync/number input with toArray', (t) => {
   t.plan(1)
 
   const it = [1, 2, 3]
@@ -46,7 +46,7 @@ test('transform/sync number input with toArray', (t) => {
   t.deepEquals(result[Symbol.iterator]().next().value, [1, 2, 3])
 })
 
-test('transform/sync object input', (t) => {
+test('transform/sync/object input', (t) => {
   t.plan(1)
 
   const it = [{value: 1}, {value: 2}, {value: 3}]
@@ -59,7 +59,7 @@ test('transform/sync object input', (t) => {
   t.deepEquals(Array.from(result), [{value: 1}, {value: 2}, {value: 3}])
 })
 
-test('transform/sync filter true values', (t) => {
+test('transform/sync/filter true values', (t) => {
   t.plan(1)
 
   const it = [true, false, true]
@@ -75,7 +75,7 @@ test('transform/sync filter true values', (t) => {
   t.deepEquals(Array.from(result), [true, true])
 })
 
-test('transform/sync finish', (t) => {
+test('transform/sync/finish', (t) => {
   t.plan(1)
 
   const it = [false]
@@ -89,7 +89,7 @@ test('transform/sync finish', (t) => {
   t.deepEquals(Array.from(result), [true])
 })
 
-test('transform/async number values', async (t) => {
+test('transform/async/number values', async (t) => {
   t.plan(4)
 
   const it = asyncIterable([1, 2, 3])
@@ -111,7 +111,7 @@ test('transform/async number values', async (t) => {
   t.deepEquals(result4.done, true)
 })
 
-test('transform/async number values with toArray', async (t) => {
+test('transform/async/number values with toArray', async (t) => {
   t.plan(1)
 
   const it = asyncIterable([1, 2, 3])
@@ -127,7 +127,7 @@ test('transform/async number values with toArray', async (t) => {
   t.deepEquals(result, [1, 2, 3])
 })
 
-test('transform', async (t) => {
+test('transform/async', async (t) => {
   t.plan(1)
 
   const it = asyncIterable([{value: 1}, {value: 2}, {value: 3}])
@@ -143,7 +143,7 @@ test('transform', async (t) => {
   t.deepEquals(result, [{value: 1}, {value: 2}, {value: 3}])
 })
 
-test('transform: many to one', (t) => {
+test('transform/sync/many to one', (t) => {
   t.plan(1)
 
   const it = [1, 1, 2, 2, 3, 3, 4]
@@ -177,7 +177,7 @@ test('transform: many to one', (t) => {
   t.deepEquals(Array.from(result), [2, 4, 6, 4])
 })
 
-test('transform: one to many', (t) => {
+test('transform/sync/one to many', (t) => {
   t.plan(1)
 
   const it = [1, 2, 3]
@@ -200,7 +200,7 @@ test('transform: one to many', (t) => {
   t.deepEquals(Array.from(result), [1, 1, 2, 2, 3, 3])
 })
 
-test('transform/finish and emit', (t) => {
+test('transform/sync/finish and emit', (t) => {
   t.plan(2)
 
   let counter = 0

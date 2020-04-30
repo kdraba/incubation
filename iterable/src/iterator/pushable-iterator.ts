@@ -23,8 +23,6 @@ export interface BufferStrategy<TIn, TOut = TIn, TState = unknown> {
   initial: TState
 }
 
-//let counter = 0
-
 const DONE = {done: true, value: undefined as any}
 
 async function* loop<TIn, TOut>({
@@ -97,15 +95,11 @@ async function* loop<TIn, TOut>({
 
       if (!value.done) {
         yield value.value
-        //console.log(this.counter, 'yield')
       } else {
-        //console.log(this.counter, 'done now')
         done = true
       }
     }
-    //console.log(this.counter, 'done')
   } catch (e) {
-    //console.log(this.counter, 'error', e)
     done = e || new Error('iteration failed')
   }
 
@@ -125,13 +119,11 @@ export class PushableIterator<TIn, TOut = TIn, TState = any>
   private pushIndex = 0
   private popIndex = 0
   private state: TState
-  //private readonly counter: number
 
   constructor(
     private readonly bufferStrategy: BufferStrategy<TIn, TOut, TState>,
   ) {
     super()
-    //this.counter = counter++
 
     this.it = loop({
       push: (value: TIn) => {
@@ -190,16 +182,13 @@ export class PushableIterator<TIn, TOut = TIn, TState = any>
   }
 
   return(): Promise<IteratorResult<TOut>> {
-    //console.log(this.counter, 'return', this.promise)
-
     if (this.promise) {
       this.it.return && this.it.return()
-
-      //console.log(this.counter, 'close', this.closing)
       this.close()
-
-      //console.log(this.counter, 'resolve done')
       this.promise.resolve(DONE)
+    } else {
+      this.it.return && this.it.return()
+      this.close()
     }
 
     this.done = true
@@ -213,7 +202,6 @@ export class PushableIterator<TIn, TOut = TIn, TState = any>
         this.it.return && this.it.return()
       }
 
-      //console.log(this.counter, 'closing')
       this.closing = true
       this.bufferStrategy.close && this.bufferStrategy.close()
       this[DISPATCH_EVENT]('close')
@@ -224,135 +212,3 @@ export class PushableIterator<TIn, TOut = TIn, TState = any>
     }
   }
 }
-
-/*
-type State<TState> =
-  | {
-      type: 'open' | 'closing'
-      state: TState
-    }
-  | {
-      type: 'closed'
-    }
-
-const DONE = {done: true, value: undefined as any}
-
-export class PushableIterator<TIn, TOut = TIn, TState = any>
-  extends withEventTargetSupport<new () => {}, {close: never}>(Object)
-  implements AsyncIterator<TOut> {
-  private state: Readonly<State<TState>>
-  private resolveWaiting?: (value: IteratorResult<TOut>) => void
-  private previous: Promise<unknown> = Promise.resolve()
-  private pushIndex = 0
-  private popIndex = 0
-
-  constructor(
-    private readonly bufferStrategy: BufferStrategy<TIn, TOut, TState>,
-  ) {
-    super()
-    this.state = {
-      type: 'open',
-      state: bufferStrategy.initial,
-    }
-  }
-
-  push(value: Readonly<TIn>): boolean {
-    if (this.state.type === 'open') {
-      this.state = {
-        type: this.state.type,
-        state: this.bufferStrategy.push(
-          this.state.state,
-          value,
-          this.pushIndex,
-        ),
-      }
-      this.pushIndex++
-
-      if (this.resolveWaiting) {
-        const r = this.bufferStrategy.pop(this.state.state, this.popIndex)
-        this.popIndex++
-
-        if (r.ready) {
-          this.state = {
-            type: this.state.type,
-            state: r.state,
-          }
-          const resolve = this.resolveWaiting
-          this.resolveWaiting = undefined
-          resolve({
-            done: false,
-            value: r.value,
-          })
-        }
-      }
-
-      return true
-    } else {
-      return false
-    }
-  }
-
-  next(): Promise<IteratorResult<TOut>> {
-    //if (!state.closed) {
-    const next = this.previous.then(() => {
-      if (this.state.type !== 'closed') {
-        const r = this.bufferStrategy.pop(this.state.state, this.popIndex)
-        this.popIndex++
-
-        if (r.ready) {
-          this.state = {
-            type: this.state.type,
-            state: r.state,
-          }
-          return {
-            done: false,
-            value: r.value,
-          }
-        } else if (this.state.type !== 'closing') {
-          return new Promise<IteratorResult<TOut>>((resolve) => {
-            this.resolveWaiting = resolve
-          })
-        } else {
-          this.state = {
-            type: 'closed',
-          }
-          return DONE
-        }
-      } else {
-        return DONE
-      }
-    })
-    this.previous = next
-    return next
-    //} else {
-    //  return Promise.resolve(DONE)
-    //}
-  }
-
-  close(): boolean {
-    if (this.state.type === 'open') {
-      if (this.resolveWaiting) {
-        this.state = {type: 'closed'}
-        this.previous = Promise.resolve()
-        const resolve = this.resolveWaiting
-        this.resolveWaiting = undefined
-        resolve(DONE)
-      } else {
-        this.state = {state: this.state.state, type: 'closing'}
-      }
-
-      this.bufferStrategy.close && this.bufferStrategy.close()
-      this[DISPATCH_EVENT]('close')
-      this[CLEAR_EVENT_LISTENERS]()
-      return true
-    } else {
-      return false
-    }
-  }
-
-  return(): Promise<IteratorResult<TOut>> {
-    this.close()
-    return Promise.resolve(DONE)
-  }
-}
-*/

@@ -34,7 +34,7 @@ export function transform<TIn, TOut = TIn, TState = TOut>(options: {
   ) => UpdateResult<TOut, TState> & Proceed
 }): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+) => T extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
 export function transform<TIn, TOut = TIn, TState = TOut>(options: {
   update: (
     value: TIn,
@@ -172,17 +172,21 @@ class TransformIterator<TIn, TOut, TState> {
 
             if (result && result.emit) {
               resolve(result.emit)
-            } else if (result.done) {
-              this.queue.return()
             }
           } catch (e) {
             reject(e)
           }
         }
 
+        if (state.proceed === 'done') {
+          this.queue.return()
+        }
+
         this.state = state
       }
     }
+
+    this.iterator.return && this.iterator.return()
   }
 
   return() {
@@ -247,6 +251,7 @@ class TransformIterator<TIn, TOut, TState> {
 
       if (!emit || (!isPromise(emit) && emit.done)) {
         this.queue.return()
+        this.iterator.return && this.iterator.return()
       }
       return emit || DONE
     }

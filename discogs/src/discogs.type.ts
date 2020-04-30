@@ -20,6 +20,9 @@ export interface Release {
   artists: ReadonlyArray<Readonly<Artist>>
   released?: string
 
+  startPos: number
+  endPos: number
+
   count: number
   eventCount: number
 }

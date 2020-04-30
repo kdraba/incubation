@@ -1,0 +1,13 @@
+{
+  "name": "@kdraba/iterable-string",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "tape bundle/**/*.test.js"
+  },
+  "devDependencies": {
+    "@types/tape": "^4.2.33",
+    "faucet": "^0.0.1",
+    "nyc": "^14.1.1",
+    "tape": "^4.11.0"
+  }
+}

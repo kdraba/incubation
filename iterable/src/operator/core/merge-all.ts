@@ -278,6 +278,10 @@ class MergeAllIterator<TIn> {
     this.iterators.return && this.iterators.return()
     this.idle.return()
     this.close.return()
+
+    for (const it of this.open.values()) {
+      it.return && it.return()
+    }
     this.open.clear()
 
     return Promise.resolve({done: true} as IteratorResult<IndexedValue<TIn>>)

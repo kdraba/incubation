@@ -15,6 +15,7 @@
     "paths": {
       "@kdraba/iterable": ["./iterable/dist"],
       "@kdraba/iterable-stream": ["./iterable-stream/dist"],
+      "@kdraba/iterable-string": ["./iterable-string/dist"],
       "@kdraba/event-listener": ["./event-listener/dist"],
       "@kdraba/discogs": ["./discogs/dist"]
     },
@@ -25,6 +26,7 @@
     { "path": "event-listener" },
     { "path": "iterable" },
     { "path": "iterable-stream" },
+    { "path": "iterable-string" },
     { "path": "discogs" }
   ],
   "include": []

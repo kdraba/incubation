@@ -41,7 +41,14 @@ module.exports = function createConfig({base, paths}) {
     },
     {
       input: {
-        'script.bundle': resolvePath(base, 'dist/index.js'),
+        'parse-releases.cli.bundle': resolvePath(
+          base,
+          'dist/parse-releases.cli.js',
+        ),
+        'find-by-barcode.cli.bundle': resolvePath(
+          base,
+          'dist/find-by-barcode.cli.js',
+        ),
       },
 
       output: {

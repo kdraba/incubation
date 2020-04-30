@@ -1,10 +1,12 @@
 import {SinonSpy, spy} from 'sinon'
 import test from 'tape'
 
-import {source} from '../../pipe'
+import {asyncIterable} from '../../iterator/async-iterable'
+import {createPushablePromise} from '../../iterator/create-pushable-promise'
+import {asyncSource, source} from '../../pipe'
 import {transform} from './transform'
 
-function createIterator<T>(values: T[], returnSpy?: SinonSpy) {
+function createIterable<T>(values: T[], returnSpy?: SinonSpy) {
   return {
     [Symbol.iterator]: () => {
       const internalIt = values[Symbol.iterator]()
@@ -16,11 +18,11 @@ function createIterator<T>(values: T[], returnSpy?: SinonSpy) {
   }
 }
 
-test('transform/return/iterator ended normally, source return not called', (t) => {
+test('transform/sync/return/iterator ended normally, source return called', (t) => {
   t.plan(1)
 
   const returnSpy = spy()
-  const it = createIterator([true], returnSpy)
+  const it = createIterable([true], returnSpy)
 
   const result = source(it)
     .pipe(
@@ -32,14 +34,14 @@ test('transform/return/iterator ended normally, source return not called', (t) =
 
   result.next()
 
-  t.true(returnSpy.notCalled)
+  t.true(returnSpy.calledOnce)
 })
 
-test('transform/return/return called after iterator ended normally, source return not called', (t) => {
+test('transform/sync/return/return called after iterator ended normally, source return called', (t) => {
   t.plan(1)
 
   const returnSpy = spy()
-  const it = createIterator([true], returnSpy)
+  const it = createIterable([true], returnSpy)
 
   const result = source(it)
     .pipe(
@@ -52,14 +54,14 @@ test('transform/return/return called after iterator ended normally, source retur
   result.next()
   result.return && result.return()
 
-  t.true(returnSpy.notCalled, 'source return not called')
+  t.true(returnSpy.calledOnce, 'source return called')
 })
 
-test('transform/return/iterator ended by invoking return, source return called once', (t) => {
+test('transform/sync/return/iterator ended by invoking return, source return called once', (t) => {
   t.plan(1)
 
   const returnSpy = spy()
-  const it = createIterator([true], returnSpy)
+  const it = createIterable([true], returnSpy)
 
   const result = source(it)
     .pipe(
@@ -74,10 +76,61 @@ test('transform/return/iterator ended by invoking return, source return called o
   t.true(returnSpy.calledOnce)
 })
 
-test('transform/return/invoking finish on return', (t) => {
+test('transform/async/return/iterator ended due to soource end, source return called once', async (t) => {
+  t.plan(1)
+
+  const returnSpyPromise = createPushablePromise<void>()
+  const returnSpy = spy(() => {
+    returnSpyPromise.push()
+    return Promise.resolve({done: true})
+  })
+  const it = asyncIterable(createIterable([true], returnSpy))
+
+  const result = asyncSource(it)
+    .pipe(
+      transform({
+        update: (value) => ({emit: true, value, proceed: true, clear: true}),
+      }),
+    )
+    [Symbol.asyncIterator]()
+
+  await result.next()
+  await result.next()
+
+  await returnSpyPromise
+
+  t.true(returnSpy.calledOnce)
+})
+
+test('transform/async/return/iterator ended due to emit finish, source return called once', async (t) => {
+  t.plan(1)
+
+  const returnSpyPromise = createPushablePromise<void>()
+  const returnSpy = spy(() => {
+    returnSpyPromise.push()
+    return Promise.resolve({done: true})
+  })
+  const it = asyncIterable(createIterable([true], returnSpy))
+
+  const result = asyncSource(it)
+    .pipe(
+      transform<boolean, boolean, undefined>({
+        update: () => ({emit: false, clear: true, proceed: 'finish'}),
+      }),
+    )
+    [Symbol.asyncIterator]()
+
+  await result.next()
+
+  await returnSpyPromise
+
+  t.true(returnSpy.calledOnce)
+})
+
+test('transform/sync/return/invoking finish on return', (t) => {
   t.plan(3)
 
-  const it = createIterator([1, 2, 3, 4])
+  const it = createIterable([1, 2, 3, 4])
 
   const result = source(it)
     .pipe(
