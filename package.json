@@ -8,6 +8,8 @@
     "iterable-stream",
     "iterable-string",
     "event-listener",
+    "database",
+    "json-writer",
     "discogs"
   ],
   "scripts": {

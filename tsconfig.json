@@ -17,6 +17,8 @@
       "@kdraba/iterable-stream": ["./iterable-stream/dist"],
       "@kdraba/iterable-string": ["./iterable-string/dist"],
       "@kdraba/event-listener": ["./event-listener/dist"],
+      "@kdraba/database": ["./database/dist"],
+      "@kdraba/json-writer": ["./json-writer/dist"],
       "@kdraba/discogs": ["./discogs/dist"]
     },
     "typeRoots": ["./@types", "./node_modules/@types"],
@@ -27,6 +29,8 @@
     { "path": "iterable" },
     { "path": "iterable-stream" },
     { "path": "iterable-string" },
+    { "path": "database" },
+    { "path": "json-writer" },
     { "path": "discogs" }
   ],
   "include": []
