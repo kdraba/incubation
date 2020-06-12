@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "module": "ES6",
+    "outDir": "./dist.es6",
+    "paths": {
+      "@kdraba/iterable": ["./iterable/dist.es6"],
+      "@kdraba/iterable-string": ["./iterable-string/dist.es6"],
+	
+      "@kdraba/iterable-stream": ["./iterable-stream/dist.es6"]
+    }
+  }
+}

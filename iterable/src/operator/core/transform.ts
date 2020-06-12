@@ -32,9 +32,12 @@ export function transform<TIn, TOut = TIn, TState = TOut>(options: {
     index: number,
     state: Value<TState>,
   ) => UpdateResult<TOut, TState> & Proceed
-}): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+}): /*<T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => T extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+  ) => T extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>*/
+((v: Iterator<TIn>) => Iterator<TOut>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TOut>)
+
 export function transform<TIn, TOut = TIn, TState = TOut>(options: {
   update: (
     value: TIn,

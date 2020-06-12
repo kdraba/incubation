@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "module": "CommonJs",
+    "outDir": "./dist.cjs",
+    "paths": {
+      "@kdraba/iterable": ["./iterable/dist.cjs"],
+      "@kdraba/iterable-string": ["./iterable-string/dist.cjs"],
+	
+      "@kdraba/iterable-stream": ["./iterable-stream/dist.cjs"]
+    }
+  }
+}

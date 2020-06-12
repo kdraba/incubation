@@ -6,9 +6,11 @@ export function filter<TIn>(
 ): (v: AsyncIterator<TIn> | Iterator<TIn>) => AsyncIterator<TIn>
 export function filter<TIn>(
   fn: (value: TIn, index: number) => boolean,
-): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+): /*<T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TIn> : AsyncIterator<TIn>
+  ) => typeof v extends Iterator<TIn> ? Iterator<TIn> : AsyncIterator<TIn>*/
+((v: Iterator<TIn>) => Iterator<TIn>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TIn>)
 export function filter<TIn>(
   fn: (value: TIn, index: number) => boolean | Promise<boolean>,
 ): any {

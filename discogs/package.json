@@ -1,7 +1,8 @@
 {
   "name": "@kdraba/discogs",
   "version": "0.0.1",
-  "scripts": {
+    "scripts": {
+	"generate": "../node_modules/.bin/ts-node -P ./tsconfig.tool.json -r tsconfig-paths/register tool/generate.ts",
     "test": "node -r source-map-support/register ../node_modules/tape/bin/tape bundle/**/test.bundle.js"
   },
   "devDependencies": {
@@ -9,7 +10,8 @@
     "@types/tape": "^4.2.33",
     "faucet": "^0.0.1",
     "sinon": "^7.3.2",
-    "tape": "^4.11.0"
+    "tape": "^4.11.0",
+    "tsconfig-paths": "^3.9.0"
   },
   "dependencies": {
     "@types/yargs": "^15.0.4",

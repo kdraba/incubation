@@ -2,15 +2,21 @@ import {transform} from './transform'
 
 export function scan<TIn, TOut = TIn>(
   fn: (agg: TOut | undefined, next: TIn, index: number) => TOut,
-): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+): /* <T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+  ) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>*/
+((v: Iterator<TIn>) => Iterator<TOut>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TOut>)
+
 export function scan<TIn, TOut, TInitial = TOut>(
   fn: (agg: TOut | TInitial, next: TIn, index: number) => TOut,
   initial: TInitial,
-): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+): /*<T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>*/
+((v: Iterator<TIn>) => Iterator<TOut>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TOut>)
+
 export function scan<TIn, TOut, TInitial>(
   fn: (agg: TOut | TInitial, next: TIn, index: number) => TOut,
   initial?: TInitial,

@@ -10,9 +10,11 @@ export function reduce<TIn, TOut>(
 export function reduce<TIn, TOut, TInitial>(
   fn: (agg: TOut | TInitial, next: TIn, index: number) => TOut,
   initial: TInitial,
-): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+): /*<T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>*/
+((v: Iterator<TIn>) => Iterator<TOut>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TOut>)
 export function reduce<TIn, TOut, TInitial>(
   fn: (agg: TOut | TInitial, next: TIn, index: number) => TOut,
   initial?: TInitial,

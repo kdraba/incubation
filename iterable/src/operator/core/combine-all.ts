@@ -22,10 +22,8 @@ export interface Result<T> {
   readonly index: number
 }
 
-export function combineAll<TIn>(): <
-  T extends HigherOrderAsync<TIn> | HigherOrderSync<TIn>
->(
-  iterator: T,
+export function combineAll<TIn>(): (
+  iterator: HigherOrderAsync<TIn> | HigherOrderSync<TIn>,
 ) => AsyncIterator<Result<Array<TIn | undefined>>> {
   const initial: Result<TIn[]> = {
     value: [],

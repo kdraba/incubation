@@ -1,9 +1,8 @@
 {
-  "name": "@kdraba/iterable",
+  "name": "@kdraba/rest-api",
   "version": "0.0.1",
   "scripts": {
     "test": "node ../node_modules/tape/bin/tape bundle/**/*test.bundle.js",
-    "test:coverage": "../node_modules/.bin/nyc --instrument false  --reporter=lcov --reporter=text-summary --exclude-after-remap false ../node_modules/.bin/tape ./bundle/test.bundle.js",
     "test:mem": "node  --expose-gc ../node_modules/tape/bin/tape bundle/**/*test.mem.bundle.js"
   },
   "devDependencies": {

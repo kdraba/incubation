@@ -3,6 +3,24 @@ const RESTART_DELAY = 100
 module.exports = {
   apps: [
     {
+      name: 'browsersync',
+      script: 'node_modules/.bin/browser-sync',
+      args: [
+        'start',
+        '-s',
+        '--cwd',
+        '.',
+        '--port',
+        '3000',
+        '--directory',
+        '--no-open',
+        '--no-ui',
+      ],
+      instances: 1,
+      autorestart: true,
+      exp_backoff_restart_delay: RESTART_DELAY,
+    },
+    {
       name: 'build:watch',
       script: 'node_modules/typescript/lib/tsc.js',
       args: ['--build', '--watch', '--preserveWatchOutput'],

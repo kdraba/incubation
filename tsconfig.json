@@ -12,26 +12,27 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "baseUrl": ".",
-    "paths": {
-      "@kdraba/iterable": ["./iterable/dist"],
-      "@kdraba/iterable-stream": ["./iterable-stream/dist"],
-      "@kdraba/iterable-string": ["./iterable-string/dist"],
-      "@kdraba/event-listener": ["./event-listener/dist"],
-      "@kdraba/database": ["./database/dist"],
-      "@kdraba/json-writer": ["./json-writer/dist"],
-      "@kdraba/discogs": ["./discogs/dist"]
-    },
     "typeRoots": ["./@types", "./node_modules/@types"],
     "skipLibCheck": true
   },
   "references": [
-    { "path": "event-listener" },
-    { "path": "iterable" },
-    { "path": "iterable-stream" },
-    { "path": "iterable-string" },
-    { "path": "database" },
-    { "path": "json-writer" },
-    { "path": "discogs" }
+    { "path": "event-listener/tsconfig.es6.json" },
+    { "path": "event-listener/tsconfig.cjs.json" },
+    { "path": "iterable/tsconfig.es6.json" },
+    { "path": "iterable/tsconfig.cjs.json" },
+    { "path": "iterable-stream/tsconfig.es6.json" },
+    { "path": "iterable-stream/tsconfig.cjs.json" },
+    { "path": "iterable-string/tsconfig.es6.json" },
+    { "path": "iterable-string/tsconfig.cjs.json" },
+    { "path": "database/tsconfig.es6.json" },
+    { "path": "database/tsconfig.cjs.json" },
+    { "path": "json-writer/tsconfig.es6.json" },
+    { "path": "json-writer/tsconfig.cjs.json" },
+    { "path": "json-schema-ts-generator/tsconfig.es6.json" },
+    { "path": "json-schema-ts-generator/tsconfig.cjs.json" },
+    { "path": "rest-api" },
+    { "path": "discogs/tsconfig.es6.json" },
+    { "path": "discogs/tsconfig.cjs.json" }  
   ],
   "include": []
 }

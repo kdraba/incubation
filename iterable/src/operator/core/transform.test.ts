@@ -24,7 +24,12 @@ test('transform/sync/number input', (t) => {
   const it = [1, 2, 3]
   const result = source(it).pipe(
     transform({
-      update: (value) => ({emit: true, proceed: true, clear: true, value}),
+      update: (value) => ({
+        emit: true,
+        proceed: true,
+        clear: true,
+        value: value,
+      }),
     }),
   )
 

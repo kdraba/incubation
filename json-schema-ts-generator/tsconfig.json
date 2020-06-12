@@ -4,13 +4,13 @@
     "composite": true,
     "rootDir": "./src",
     "outDir": "./dist",
-    "lib": ["es2018.asynciterable"]
+    "lib": ["es2018.asynciterable"],
+    "module": "CommonJs"
   },
   "include": [
     "./src/**/*.ts"
   ],
   "exclude": [
-    "./src/**/.*.ts",
     "./src/**/*.sample.ts"
   ]
 }

@@ -15,6 +15,7 @@ start-emacs.sh
 node_modules/
 npm-packages-offline-cache/
 dist/
+dist.*/
 bundle/
 *.tsbuildinfo
 *.log

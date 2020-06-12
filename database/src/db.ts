@@ -11,7 +11,7 @@ export class Db<TValue, TKey extends string> {
       start: number,
       length: number,
     ) => Promise<{buffer: Buffer; bytesRead: number}>,
-    private readonly encoding: string,
+    private readonly encoding: ConstructorParameters<typeof StringDecoder>[0],
   ) {}
 
   public size(indexKey: TKey) {

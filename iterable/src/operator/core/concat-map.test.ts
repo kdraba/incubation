@@ -116,10 +116,12 @@ test('async concat map: sync in - map to sync and async values', async (t) => {
   const it: number[] = [1, 2, 3]
   const resultIt = source(it)
     .pipe(
-      concatMap((v) =>
-        v % 2 === 0
-          ? [v, v][Symbol.iterator]()
-          : toAsyncIterator([v, v][Symbol.iterator]()),
+      concatMap(
+        (v) =>
+          v % 2 === 0
+            ? [v, v][Symbol.iterator]()
+            : toAsyncIterator([v, v][Symbol.iterator]()),
+        'async',
       ),
     )
     .pipe(toArray())

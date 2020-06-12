@@ -234,8 +234,12 @@ function toIndexedAsyncIterator<TIn>(
 
 function toAsyncIteratorOfIndexedAsyncIterators<TIn>(
   it:
+    | HigherOrderAsync<TIn>
+    | HigherOrderSync<
+        TIn
+      > /*
     | Iterator<Iterator<TIn> | AsyncIterator<TIn>>
-    | AsyncIterator<Iterator<TIn> | AsyncIterator<TIn>>,
+    | AsyncIterator<Iterator<TIn> | AsyncIterator<TIn>>*/,
 ): AsyncIterator<IndexedValue<AsyncIterator<TIn>>> {
   return asyncSource({
     [Symbol.asyncIterator]: () => asyncIterator(it),
@@ -288,10 +292,8 @@ class MergeAllIterator<TIn> {
   }
 }
 
-export function mergeAll<TIn>(): <
-  T extends HigherOrderAsync<TIn> | HigherOrderSync<TIn>
->(
-  it: T,
+export function mergeAll<TIn>(): (
+  it: HigherOrderAsync<TIn> | HigherOrderSync<TIn>,
 ) => AsyncIterator<IndexedValue<TIn>> {
   return (it) => new MergeAllIterator(it)
 }

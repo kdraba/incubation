@@ -27,9 +27,17 @@ function applyNext<TOut>(
 
 export function concatMap<TIn, TOut>(
   fn: (value: TIn, index: number) => Iterator<TOut>,
-): <T extends AsyncIterator<TIn> | Iterator<TIn>>(
+): /*<T extends AsyncIterator<TIn> | Iterator<TIn>>(
   v: T,
-) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>
+) => typeof v extends Iterator<TIn> ? Iterator<TOut> : AsyncIterator<TOut>*/
+((v: Iterator<TIn>) => Iterator<TOut>) &
+  ((v: AsyncIterator<TIn>) => AsyncIterator<TOut>)
+export function concatMap<TIn, TOut>(
+  fn: (
+    value: TIn,
+    index: number,
+  ) => AsyncIterator<TOut> | Promise<Iterator<TOut> | AsyncIterator<TOut>>,
+): (it: Iterator<TIn> | AsyncIterator<TIn>) => AsyncIterator<TOut>
 export function concatMap<TIn, TOut>(
   fn: (
     value: TIn,
@@ -38,6 +46,7 @@ export function concatMap<TIn, TOut>(
     | AsyncIterator<TOut>
     | Iterator<TOut>
     | Promise<Iterator<TOut> | AsyncIterator<TOut>>,
+  hint: 'async',
 ): (it: Iterator<TIn> | AsyncIterator<TIn>) => AsyncIterator<TOut>
 export function concatMap<TIn, TOut>(
   fn: (
@@ -47,6 +56,7 @@ export function concatMap<TIn, TOut>(
     | Iterator<TOut>
     | AsyncIterator<TOut>
     | Promise<Iterator<TOut> | AsyncIterator<TOut>>,
+  hint?: 'async',
 ): (
   it: Iterator<TIn> & AsyncIterator<TIn>,
 ) => Iterator<TOut> | AsyncIterator<TOut> {
@@ -55,7 +65,9 @@ export function concatMap<TIn, TOut>(
       const it = currentIt.hasValue ? currentIt.value : fn(value, index)
       const next = apply(it, (i) => [i, i.next()] as const)
       const result = apply(next, ([i, r]) => apply(r, (rx) => applyNext(i, rx)))
-      return result as any
+      return (hint === 'async' && !isPromise(result)
+        ? Promise.resolve(result)
+        : result) as any
     },
   }) as any
 }

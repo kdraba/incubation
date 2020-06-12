@@ -1,0 +1,49 @@
+{
+    "definitions": {
+	"stats": {
+	    "type": "object",
+	    "progress": "number",
+	    "estimate": "number",
+	    "duration": "number",
+	    "eta": "number",
+	    "byteCount": "number",
+	    "size": "number",
+	    "memoryUsage": {
+		"type": "object",
+		"rss": "number",
+		"heapTotal": "number",
+		"heapUsed": "number",
+		"external": "number"
+	    }
+	},
+	"release": {
+	    "type": "object",
+	    "properties": {
+		"id": "string",
+		"barcodes": {
+		    "type": "array",
+		    "items": { "type": "string" }
+		},
+		"title": "string",
+		"artists": {
+		    "type": "array",
+		    "items": { "$ref": "#/definitions/artist" }
+		},
+		"released": "string",
+		"startPos": "number",
+		"endPos": "number",
+		"count": "number",
+		"eventCount": "number"
+	    },
+	    "required": ["id", "barcodes", "title", "artists", "startPos", "endPos", "count", "eventCount"]
+	},
+	"artist": {
+	    "type": "object",
+	    "properties": {
+		"id": "string",
+		"name": "string"
+	    },
+	    "required": ["id", "name"]
+	}
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "module": "CommonJs",
+    "paths": {
+      "@kdraba/json-schema-ts-generator": ["./json-schema-ts-generator/dist.cjs"],
+      "@kdraba/iterable": ["./iterable/dist.cjs"],
+      "@kdraba/event-listener": ["./event-listener/dist.cjs"]
+    }
+  },
+  "include": [
+    "./tool/**/*.ts",
+  ],
+}
